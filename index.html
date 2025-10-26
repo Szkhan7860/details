@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number & Aadhaar Lookup</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0a0a0f;
+  color: #e0e0e0;
+  scroll-behavior: smooth;
+}
+
+.container {
+  max-width: 550px;
+  margin: 50px auto;
+  background: rgba(15, 15, 25, 0.9);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+}
+
+h1 {
+  text-align: center;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+  margin-bottom: 20px;
+}
+
+.toggle-btn {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.toggle-btn button {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  background: #111;
+  cursor: pointer;
+  font-weight: bold;
+  color: #00ffff;
+  border-radius: 10px;
+  margin: 0 5px;
+  transition: 0.3s;
+  box-shadow: 0 0 10px rgba(0,255,255,0.2);
+}
+
+.toggle-btn button.active {
+  background: #00ffff;
+  color: #000;
+  box-shadow: 0 0 20px #00ffff;
+}
+
+.field {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.field input {
+  width: 100%;
+  padding: 15px 45px;
+  border-radius: 10px;
+  border: 1px solid #00ffff;
+  background: #111;
+  color: #fff;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+
+.field input:focus {
+  border-color: #0ff;
+  box-shadow: 0 0 15px #00ffff;
+  outline: none;
+}
+
+.field i {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #00ffff;
+}
+
+button.search-btn {
+  width: 100%;
+  padding: 15px;
+  background: #00ffff;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 0 20px #00ffff;
+}
+
+button.search-btn:hover {
+  background: #0ff;
+  box-shadow: 0 0 40px #00ffff;
+}
+
+#output {
+  margin-top: 20px;
+}
+
+.result-card, .error-card {
+  background: rgba(0, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  animation: fadeIn 0.5s ease forwards;
+  box-shadow: 0 0 15px rgba(0,255,255,0.2);
+  word-wrap: break-word;
+}
+
+.error-card {
+  background: rgba(255,0,0,0.1);
+  color: #ff4c4c;
+  box-shadow: 0 0 15px rgba(255,0,0,0.3);
+}
+
+.result-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(0,255,255,0.4);
+}
+
+.result-card p {
+  margin: 8px 0;
+  line-height: 1.4;
+  color: #e0ffff;
+}
+
+.result-card i {
+  color: #00ffff;
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  0% {opacity: 0; transform: translateY(10px);}
+  100% {opacity: 1; transform: translateY(0);}
+}
+
+.loading {
+  text-align: center;
+  font-size: 24px;
+  color: #00ffff;
+  margin-top: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+#toTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #00ffff;
+  color: #000;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: none;
+  box-shadow: 0 0 20px #00ffff;
+  transition: 0.3s;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+#toTop:hover {
+  background: #0ff;
+  transform: scale(1.1);
+}
+
+footer {
+  text-align: center;
+  margin-top: 50px;
+  color: #00ffff;
+  padding: 20px;
+  border-top: 1px solid #00ffff;
+  box-shadow: 0 -5px 15px rgba(0,255,255,0.1);
+}
+
+.social-links a {
+  color: #00ffff;
+  margin: 0 10px;
+  font-size: 24px;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.social-links a:hover {
+  color: #fff;
+  text-shadow: 0 0 15px #00ffff;
+}
+
+@media (max-width: 600px) {
+  .container { margin: 20px; padding: 20px; }
+  #toTop { bottom: 20px; right: 20px; width: 45px; height: 45px; font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<div class="container" id="top">
+  <h1>Number & Aadhaar Lookup</h1>
+  <div class="toggle-btn">
+    <button id="mobileBtn" class="active" onclick="toggleInput('mobile')"><i class="fa-solid fa-phone"></i> Mobile</button>
+    <button id="aadhaarBtn" onclick="toggleInput('aadhaar')"><i class="fa-solid fa-id-card"></i> Aadhaar</button>
+  </div>
+  <div class="field" id="mobileField">
+    <i class="fa-solid fa-phone"></i>
+    <input type="tel" id="mobile" placeholder="Enter 10-digit Mobile Number" maxlength="10">
+  </div>
+  <div class="field" id="aadhaarField" style="display:none">
+    <i class="fa-solid fa-id-card"></i>
+    <input type="tel" id="aadhaar" placeholder="Enter 12-digit Aadhaar Number" maxlength="12">
+  </div>
+  <button class="search-btn" onclick="search()">Search</button>
+  <div id="output"></div>
+</div>
+
+<footer>
+  <div class="social-links">
+    <a href="https://instagram.com/Shahnawaz._.2006" target="_blank"><i class="fab fa-instagram"></i></a>
+    <a href="https://telegram.me/Sukuna_verified" target="_blank"><i class="fab fa-telegram"></i></a>
+    <a href="https://wa.me/+919236520233" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <a href="mailto:szcamps@gmail.com"><i class="fa-solid fa-envelope"></i></a>
+  </div>
+  <p>Made with 💙 by Shahnawaz</p>
+</footer>
+
+<button id="toTop" onclick="scrollToTop()"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script>
+let currentInput = 'mobile';
+function toggleInput(type) {
+  currentInput = type;
+  if(type==='mobile') {
+    document.getElementById('mobileField').style.display='block';
+    document.getElementById('aadhaarField').style.display='none';
+    document.getElementById('mobileBtn').classList.add('active');
+    document.getElementById('aadhaarBtn').classList.remove('active');
+  } else {
+    document.getElementById('mobileField').style.display='none';
+    document.getElementById('aadhaarField').style.display='block';
+    document.getElementById('mobileBtn').classList.remove('active');
+    document.getElementById('aadhaarBtn').classList.add('active');
+  }
+}
+
+window.onscroll = function() {
+  document.getElementById('toTop').style.display = 
+    (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) ? 'flex' : 'none';
+};
+
+function scrollToTop() {
+  document.getElementById('top').scrollIntoView({behavior: "smooth"});
+}
+
+async function search() {
+  let mobile = document.getElementById('mobile').value.trim();
+  let aadhaar = document.getElementById('aadhaar').value.trim();
+  let output = document.getElementById('output');
+  output.innerHTML = '<div class="loading"><i class="fa-solid fa-spinner"></i></div>';
+  let url = '';
+
+  if(currentInput==='mobile' && mobile.length===10 && /^\d{10}$/.test(mobile)) {
+    url = `https://n2d.vercel.app/api?key=freeApi&number=${mobile}`;
+  } else if(currentInput==='aadhaar' && aadhaar.length===12 && /^\d{12}$/.test(aadhaar)) {
+    url = `https://n2d.vercel.app/api?key=freeApi&aadhaar_number=${aadhaar}`;
+  } else {
+    output.innerHTML = '<div class="error-card">Please enter a valid number</div>';
+    return;
+  }
+
+  try {
+    let response = await fetch(url);
+    let data = await response.json();
+    if(data.status === "success") {
+      let html = '';
+      data.data.forEach(item => {
+        html += `<div class="result-card">
+          <p><i class="fa-solid fa-user"></i><strong>Name:</strong> ${item.name}</p>
+          <p><i class="fa-solid fa-user-pen"></i><strong>Father's Name:</strong> ${item.father_name}</p>
+          <p><i class="fa-solid fa-phone"></i><strong>Mobile:</strong> ${item.mobile}</p>
+          <p><i class="fa-solid fa-phone-volume"></i><strong>Alt Mobile:</strong> ${item.alt_mobile || 'N/A'}</p>
+          <p><i class="fa-solid fa-signal"></i><strong>Circle:</strong> ${item.circle}</p>
+          <p><i class="fa-solid fa-id-card"></i><strong>Aadhaar:</strong> ${item.aadhaar_number || 'N/A'}</p>
+          <p><i class="fa-solid fa-location-dot"></i><strong>Address:</strong> ${item.address}</p>
+          <p><i class="fa-solid fa-envelope"></i><strong>Email:</strong> ${item.email || 'N/A'}</p>
+        </div>`;
+      });
+      output.innerHTML = html;
+    } else {
+      output.innerHTML = `<div class="error-card">${data.data[0].error}</div>`;
+    }
+  } catch(err) {
+    output.innerHTML = `<div class="error-card">Something went wrong. Try again later.</div>`;
+  }
+}
+</script>
+</body>
+</html>
